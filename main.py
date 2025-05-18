@@ -32,52 +32,57 @@ def index():
         if request.form.get('action') == 'delete':
             contact_id = request.form.get('contact_id')
             db = get_db()
-            db.execute('DELETE FROM contacts WHERE id = ?', (contact_id,))
+            db.execute('DELETE FROM items WHERE id = ?', (contact_id,))
             db.commit()
-            message = 'Contact deleted successfully.'
+            message = 'Item deleted successfully.'
         else:
             name = request.form.get('name')
-            phone = request.form.get('phone')
+            item_id = request.form.get('item_id')
+            price = request.form.get('price')
             if name and phone:
                 db = get_db()
-                db.execute('INSERT INTO contacts (name, phone) VALUES (?, ?)', (name, phone))
+                db.execute('INSERT INTO items (name, item_id, price) VALUES (?, ?, ?)', (name, item_id, price))
                 db.commit()
-                message = 'Contact added successfully.'
+                message = 'Item added successfully.'
             else:
-                message = 'Missing name or phone number.'
+                message = 'Missing name, ID number, or Price.'
 
     # Always display the contacts table
     db = get_db()
-    contacts = db.execute('SELECT * FROM contacts').fetchall()
+    contacts = db.execute('SELECT * FROM items').fetchall()
 
     # Display the HTML form along with the contacts table
     return render_template_string('''
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Contacts</title>
+            <title>Inventory</title>
         </head>
         <body>
-            <h2>Add Contacts</h2>
+            <h2>Add Inventory</h2>
             <form method="POST" action="/">
                 <label for="name">Name:</label><br>
                 <input type="text" id="name" name="name" required><br>
-                <label for="phone">Phone Number:</label><br>
-                <input type="text" id="phone" name="phone" required><br><br>
+                <label for="phone">Item ID:</label><br>
+                <input type="text" id="item_id" name="item_id" required><br>
+                <label for="phone">Price:</label><br>
+                <input type="text" id="price" name="price" required><br><br>
                 <input type="submit" value="Submit">
             </form>
             <p>{{ message }}</p>
-            {% if contacts %}
+            {% if items %}
                 <table border="1">
                     <tr>
                         <th>Name</th>
-                        <th>Phone Number</th>
+                        <th>Item ID</th>
+                        <th>Price</th>
                         <th>Delete</th>
                     </tr>
-                    {% for contact in contacts %}
+                    {% for item in items %}
                         <tr>
-                            <td>{{ contact['name'] }}</td>
-                            <td>{{ contact['phone'] }}</td>
+                            <td>{{ item['name'] }}</td>
+                            <td>{{ item['item_id'] }}</td>
+                            <td>{{ item['price'] }}</td>
                             <td>
                                 <form method="POST" action="/">
                                     <input type="hidden" name="contact_id" value="{{ contact['id'] }}">
@@ -89,11 +94,11 @@ def index():
                     {% endfor %}
                 </table>
             {% else %}
-                <p>No contacts found.</p>
+                <p>No items found.</p>
             {% endif %}
         </body>
         </html>
-    ''', message=message, contacts=contacts)
+    ''', message=message, items=items)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
