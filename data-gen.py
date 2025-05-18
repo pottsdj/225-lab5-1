@@ -8,7 +8,7 @@ def connect_db():
     return sqlite3.connect(DATABASE)
 
 def generate_test_data(num_items):
-    """Generate test data for the contacts table."""
+    """Generate test data for the items table."""
     db = connect_db()
     for i in range(num_items):
         name = f'Test Name {i}'
