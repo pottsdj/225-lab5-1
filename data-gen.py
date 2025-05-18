@@ -14,7 +14,7 @@ def generate_test_data(num_items):
         name = f'Test Name {i}'
         item_id = f'123456789{i}'
         price = f'12{i}'
-        db.execute('INSERT INTO items (name, item_id, price) VALUES (?, ?)', (name, item_id, price))
+        db.execute('INSERT INTO items (name, item_id, price) VALUES (?, ?, ?)', (name, item_id, price))
     db.commit()
     print(f'{num_items} test items added to the database.')
     db.close()
