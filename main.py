@@ -40,7 +40,7 @@ def index():
             name = request.form.get('name')
             item_id = request.form.get('item_id')
             price = request.form.get('price')
-            if name and phone:
+            if name and item_id and price:
                 db = get_db()
                 db.execute('INSERT INTO items (name, item_id, price) VALUES (?, ?, ?)', (name, item_id, price))
                 db.commit()
