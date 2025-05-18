@@ -64,9 +64,9 @@ def index():
             <form method="POST" action="/">
                 <label for="name">Name:</label><br>
                 <input type="text" id="name" name="name" required><br>
-                <label for="phone">Item ID:</label><br>
+                <label for="item_id">Item ID:</label><br>
                 <input type="text" id="item_id" name="item_id" required><br>
-                <label for="phone">Price:</label><br>
+                <label for="price">Price:</label><br>
                 <input type="text" id="price" name="price" required><br><br>
                 <input type="submit" value="Submit">
             </form>
