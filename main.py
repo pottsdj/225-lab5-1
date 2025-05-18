@@ -19,7 +19,8 @@ def init_db():
             CREATE TABLE IF NOT EXISTS contacts (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
-                phone TEXT NOT NULL
+                item_id TEXT NOT NULL
+                price TEXT NOT NULL
             );
         ''')
         db.commit()
