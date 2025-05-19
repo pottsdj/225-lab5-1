@@ -16,11 +16,10 @@ def init_db():
     with app.app_context():
         db = get_db()
         db.execute('''
-            CREATE TABLE IF NOT EXISTS items (
+            CREATE TABLE IF NOT EXISTS contacts (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
-                item_id TEXT NOT NULL
-                price TEXT NOT NULL
+                phone TEXT NOT NULL
             );
         ''')
         db.commit()
@@ -33,57 +32,52 @@ def index():
         if request.form.get('action') == 'delete':
             contact_id = request.form.get('contact_id')
             db = get_db()
-            db.execute('DELETE FROM items WHERE id = ?', (contact_id,))
+            db.execute('DELETE FROM contacts WHERE id = ?', (contact_id,))
             db.commit()
-            message = 'Item deleted successfully.'
+            message = 'Contact deleted successfully.'
         else:
             name = request.form.get('name')
-            item_id = request.form.get('item_id')
-            price = request.form.get('price')
-            if name and item_id and price:
+            phone = request.form.get('phone')
+            if name and phone:
                 db = get_db()
-                db.execute('INSERT INTO items (name, item_id, price) VALUES (?, ?, ?)', (name, item_id, price))
+                db.execute('INSERT INTO contacts (name, phone) VALUES (?, ?)', (name, phone))
                 db.commit()
-                message = 'Item added successfully.'
+                message = 'Contact added successfully.'
             else:
-                message = 'Missing name, ID number, or Price.'
+                message = 'Missing name or phone number.'
 
     # Always display the contacts table
     db = get_db()
-    contacts = db.execute('SELECT * FROM items').fetchall()
+    contacts = db.execute('SELECT * FROM contacts').fetchall()
 
     # Display the HTML form along with the contacts table
     return render_template_string('''
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Inventory</title>
+            <title>Contacts</title>
         </head>
         <body>
-            <h2>Add Inventory</h2>
+            <h2>Add Contacts</h2>
             <form method="POST" action="/">
                 <label for="name">Name:</label><br>
                 <input type="text" id="name" name="name" required><br>
-                <label for="item_id">Item ID:</label><br>
-                <input type="text" id="item_id" name="item_id" required><br>
-                <label for="price">Price:</label><br>
-                <input type="text" id="price" name="price" required><br><br>
+                <label for="phone">Phone Number:</label><br>
+                <input type="text" id="phone" name="phone" required><br><br>
                 <input type="submit" value="Submit">
             </form>
             <p>{{ message }}</p>
-            {% if items %}
+            {% if contacts %}
                 <table border="1">
                     <tr>
                         <th>Name</th>
-                        <th>Item ID</th>
-                        <th>Price</th>
+                        <th>Phone Number</th>
                         <th>Delete</th>
                     </tr>
-                    {% for item in items %}
+                    {% for contact in contacts %}
                         <tr>
-                            <td>{{ item['name'] }}</td>
-                            <td>{{ item['item_id'] }}</td>
-                            <td>{{ item['price'] }}</td>
+                            <td>{{ contact['name'] }}</td>
+                            <td>{{ contact['phone'] }}</td>
                             <td>
                                 <form method="POST" action="/">
                                     <input type="hidden" name="contact_id" value="{{ contact['id'] }}">
@@ -95,11 +89,11 @@ def index():
                     {% endfor %}
                 </table>
             {% else %}
-                <p>No items found.</p>
+                <p>No contacts found.</p>
             {% endif %}
         </body>
         </html>
-    ''', message=message, items=items)
+    ''', message=message, contacts=contacts)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
